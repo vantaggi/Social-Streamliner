@@ -1,0 +1,9 @@
+Flask[async]
+gspread
+python-telegram-bot
+google-auth-oauthlib
+oauth2client
+python-dotenv
+google-generativeai
+requests
+schedule

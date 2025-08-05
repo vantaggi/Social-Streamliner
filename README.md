@@ -50,11 +50,29 @@ Social Streamliner è una soluzione completa per automatizzare il processo di cr
       - `TELEGRAM_CHAT_ID`: L'ID della chat di Telegram dove inviare le clip per l'approvazione.
       - `GOOGLE_GEMINI_API_KEY`: La tua chiave API di Google Gemini.
 
+    #### Credenziali YouTube (OAuth2)
+    1.  Vai sulla [Google Cloud Platform](https://console.cloud.google.com/) e seleziona il tuo progetto.
+    2.  Abilita l'API **'YouTube Data API v3'**.
+    3.  Vai su **Credenziali**, clicca su **Crea credenziali** e scegli **ID client OAuth**.
+    4.  Seleziona **Applicazione desktop** come tipo di applicazione.
+    5.  Scarica il file JSON delle credenziali, rinominalo in `client_secrets.json` e posizionalo nella cartella principale del backend (`social_streamliner/`).
+    6.  **Importante:** La prima volta che lo scheduler eseguirà una pubblicazione su YouTube, aprirà una finestra del browser per chiederti di autorizzare l'applicazione. Dovrai completare questo passaggio una sola volta.
+
 4.  **Avvia il server Flask:**
     ```bash
     flask run
     ```
     Il backend sarà in esecuzione su `http://127.0.0.1:5000`.
+
+### 5. Esporre il Server con Cloudflare Tunnel (Obbligatorio)
+
+Per permettere all'app Flutter di comunicare con il tuo server casalingo, devi esporlo a internet.
+
+1.  Crea un account gratuito su [Cloudflare](https://www.cloudflare.com).
+2.  Segui la loro guida ufficiale per installare `cloudflared` sul tuo mini PC e creare un nuovo tunnel. Puoi trovare la guida cercando "Cloudflare Tunnel guide".
+3.  Configura il tunnel in modo che punti al tuo servizio locale. Il comando di solito è:
+    `cloudflared tunnel --url http://localhost:5000`
+4.  Cloudflare ti fornirà un URL pubblico permanente (es. `https://tua-app.trycloudflare.com`). Salva questo URL.
 
 ### Configurazione dell'App Flutter
 

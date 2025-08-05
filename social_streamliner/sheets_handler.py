@@ -1,29 +1,22 @@
-import os
 import gspread
-from dotenv import load_dotenv
 from datetime import datetime
-
-# Carica le variabili d'ambiente dal file .env
-load_dotenv()
+import config
 
 def get_spreadsheet():
     """Funzione helper per autenticarsi e ottenere l'oggetto spreadsheet."""
-    google_sheet_name = os.getenv("GOOGLE_SHEET_NAME")
-    credentials_file = os.getenv("GOOGLE_CREDENTIALS_FILE")
-
-    if not google_sheet_name or not credentials_file:
+    if not config.GOOGLE_SHEET_NAME or not config.GOOGLE_CREDENTIALS_FILE:
         print("Errore: GOOGLE_SHEET_NAME o GOOGLE_CREDENTIALS_FILE non sono impostati.")
         return None
 
     try:
-        gc = gspread.service_account(filename=credentials_file)
-        spreadsheet = gc.open(google_sheet_name)
+        gc = gspread.service_account(filename=config.GOOGLE_CREDENTIALS_FILE)
+        spreadsheet = gc.open(config.GOOGLE_SHEET_NAME)
         return spreadsheet
     except FileNotFoundError:
-        print(f"Errore: File di credenziali '{credentials_file}' non trovato.")
+        print(f"Errore: File di credenziali '{config.GOOGLE_CREDENTIALS_FILE}' non trovato.")
         return None
     except gspread.exceptions.SpreadsheetNotFound:
-        print(f"Errore: Google Sheet con nome '{google_sheet_name}' non trovato.")
+        print(f"Errore: Google Sheet con nome '{config.GOOGLE_SHEET_NAME}' non trovato.")
         return None
     except Exception as e:
         print(f"Errore imprevisto durante l'accesso a Google Sheets: {e}")

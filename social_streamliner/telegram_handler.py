@@ -1,9 +1,5 @@
-import os
 import telegram
-from dotenv import load_dotenv
-
-# Carica le variabili d'ambiente dal file .env
-load_dotenv()
+import config
 
 async def send_to_telegram(clip_id, video_url):
     """
@@ -17,15 +13,12 @@ async def send_to_telegram(clip_id, video_url):
     Returns:
         bool: True se l'invio è riuscito, False altrimenti.
     """
-    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_id = os.getenv("TELEGRAM_CHAT_ID")
-
-    if not bot_token or not chat_id:
+    if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_CHAT_ID:
         print("Errore: TELEGRAM_BOT_TOKEN o TELEGRAM_CHAT_ID non sono impostati nel file .env")
         return False
 
     try:
-        bot = telegram.Bot(token=bot_token)
+        bot = telegram.Bot(token=config.TELEGRAM_BOT_TOKEN)
 
         # Creazione della tastiera inline
         keyboard = [
@@ -39,7 +32,7 @@ async def send_to_telegram(clip_id, video_url):
         # Invio del video
         # Usiamo un timeout più lungo perché il download e l'invio del video possono richiedere tempo
         await bot.send_video(
-            chat_id=chat_id,
+            chat_id=config.TELEGRAM_CHAT_ID,
             video=video_url,
             reply_markup=reply_markup,
             connect_timeout=30,
@@ -68,13 +61,12 @@ async def send_confirmation_message(chat_id, text):
     Returns:
         bool: True se l'invio è riuscito, False altrimenti.
     """
-    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
-    if not bot_token:
+    if not config.TELEGRAM_BOT_TOKEN:
         print("Errore: TELEGRAM_BOT_TOKEN non è impostato.")
         return False
 
     try:
-        bot = telegram.Bot(token=bot_token)
+        bot = telegram.Bot(token=config.TELEGRAM_BOT_TOKEN)
         await bot.send_message(chat_id=chat_id, text=text)
         print(f"Messaggio di conferma inviato alla chat {chat_id}.")
         return True

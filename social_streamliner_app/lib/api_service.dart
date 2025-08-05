@@ -1,17 +1,27 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  // TODO: Move this URL to an environment configuration file.
-  static const String _backendUrl = "http://127.0.0.1:5000/webhook";
+  static const String _backendUrlKey = 'backend_url';
 
-  /// Invia i dati della clip (URL, nome del gioco, dettagli) al backend.
-  ///
-  /// Restituisce `true` se la richiesta ha successo, altrimenti `false`.
+  Future<String?> _getBackendUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_backendUrlKey);
+  }
+
   Future<bool> sendClipData(String videoUrl, String gameName, String clipDetails) async {
+    final baseUrl = await _getBackendUrl();
+    if (baseUrl == null || baseUrl.isEmpty) {
+      print('URL del backend non configurato!');
+      return false;
+    }
+
+    final fullUrl = '$baseUrl/webhook';
+
     try {
       final response = await http.post(
-        Uri.parse(_backendUrl),
+        Uri.parse(fullUrl),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },

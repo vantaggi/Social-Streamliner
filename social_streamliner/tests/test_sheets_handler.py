@@ -24,33 +24,47 @@ class TestSheetsHandler(unittest.TestCase):
         mock_spreadsheet.worksheet.return_value = mock_worksheet
         mock_get_spreadsheet.return_value = mock_spreadsheet
 
-        result = save_to_id_store("test_id", "http://video.url")
+        # Ora passiamo tutti i parametri richiesti
+        result = save_to_id_store("test_id", "http://video.url", "TestGame", "Some details")
 
         self.assertTrue(result)
         mock_spreadsheet.worksheet.assert_called_once_with("ID_Store")
         mock_worksheet.append_row.assert_called_once()
-        # Verifica che il primo argomento di append_row sia l'ID corretto
-        self.assertEqual(mock_worksheet.append_row.call_args[0][0][0], "test_id")
+        # Verifica che i dati corretti siano stati passati
+        appended_row = mock_worksheet.append_row.call_args[0][0]
+        self.assertEqual(appended_row[0], "test_id")
+        self.assertEqual(appended_row[1], "http://video.url")
+        self.assertEqual(appended_row[3], "TestGame")
+        self.assertEqual(appended_row[4], "Some details")
 
     @patch('sheets_handler.get_spreadsheet')
     def test_get_video_url_by_clip_id_found(self, mock_get_spreadsheet):
-        """Testa il recupero di un URL quando il clip_id viene trovato."""
+        """Testa il recupero dei dati di una clip quando il clip_id viene trovato."""
         mock_cell = MagicMock()
         mock_cell.row = 1
-        mock_cell.col = 1
 
+        # Simula i dati restituiti per l'intera riga
+        mock_row_values = ["found_id", "http://found.url", "2025-01-01", "FoundGame", "FoundDetails"]
         mock_worksheet = MagicMock()
         mock_worksheet.find.return_value = mock_cell
-        mock_worksheet.cell.return_value.value = "http://found.url"
+        mock_worksheet.row_values.return_value = mock_row_values
 
         mock_spreadsheet = MagicMock()
         mock_spreadsheet.worksheet.return_value = mock_worksheet
         mock_get_spreadsheet.return_value = mock_spreadsheet
 
-        url = get_video_url_by_clip_id("found_id")
+        # La funzione ora restituisce un dizionario
+        clip_data = get_video_url_by_clip_id("found_id")
 
-        self.assertEqual(url, "http://found.url")
+        # Verifica che il dizionario restituito sia corretto
+        expected_data = {
+            "video_url": "http://found.url",
+            "game_name": "FoundGame",
+            "clip_details": "FoundDetails"
+        }
+        self.assertEqual(clip_data, expected_data)
         mock_worksheet.find.assert_called_once_with("found_id")
+        mock_worksheet.row_values.assert_called_once_with(1)
 
     @patch('sheets_handler.get_spreadsheet')
     def test_get_video_url_by_clip_id_not_found(self, mock_get_spreadsheet):

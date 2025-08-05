@@ -1,0 +1,27 @@
+name: social_streamliner_app
+description: A Flutter client for the Social Streamliner backend.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+# Dependencies for your application.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # For making HTTP requests
+  http: ^1.2.1
+
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true

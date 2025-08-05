@@ -1,14 +1,13 @@
 import uuid
 from flask import Flask, request, jsonify
-from dotenv import load_dotenv
 
 # Importa le funzioni dai moduli di supporto
 from sheets_handler import save_to_id_store, get_video_url_by_clip_id, add_to_content_calendar
 from telegram_handler import send_to_telegram, send_confirmation_message
 from gemini_handler import generate_content
 
-# Carica le variabili d'ambiente dal file .env
-load_dotenv()
+# Il modulo config si occupa di caricare le variabili d'ambiente
+import config
 
 app = Flask(__name__)
 

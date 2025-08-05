@@ -1,6 +1,7 @@
 import os
 import time
 import schedule
+import config
 from sheets_handler import get_next_scheduled_post, update_post_status
 from downloader import download_video
 from publishers import all_publishers
@@ -67,10 +68,12 @@ def main():
     """
     print("Avvio dello scheduler di pubblicazione...")
 
-    # Imposta la schedulazione. Esempio: ogni giorno alle 09:00 e alle 18:00
-    # Per testing, possiamo eseguirlo più frequentemente, es. ogni minuto.
-    schedule.every().day.at("09:00").do(job)
-    schedule.every().day.at("18:00").do(job)
+    # Legge gli orari dal file di configurazione
+    publish_times = config.PUBLISH_SCHEDULE.split(',')
+
+    print(f"Schedulazione dei job per i seguenti orari: {publish_times}")
+    for t in publish_times:
+        schedule.every().day.at(t.strip()).do(job)
 
     # Loop infinito per mantenere lo script in esecuzione
     while True:

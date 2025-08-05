@@ -5,10 +5,10 @@ class ApiService {
   // TODO: Move this URL to an environment configuration file.
   static const String _backendUrl = "http://127.0.0.1:5000/webhook";
 
-  /// Invia l'URL del video al backend.
+  /// Invia i dati della clip (URL, nome del gioco, dettagli) al backend.
   ///
   /// Restituisce `true` se la richiesta ha successo, altrimenti `false`.
-  Future<bool> sendVideoUrl(String videoUrl) async {
+  Future<bool> sendClipData(String videoUrl, String gameName, String clipDetails) async {
     try {
       final response = await http.post(
         Uri.parse(_backendUrl),
@@ -17,11 +17,13 @@ class ApiService {
         },
         body: jsonEncode(<String, String>{
           'videoUrl': videoUrl,
+          'gameName': gameName,
+          'clipDetails': clipDetails,
         }),
       );
 
       if (response.statusCode == 200) {
-        print('URL inviato con successo al backend.');
+        print('Dati della clip inviati con successo al backend.');
         return true;
       } else {
         print('Errore dal backend: ${response.statusCode}');

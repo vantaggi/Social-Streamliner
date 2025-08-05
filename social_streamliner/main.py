@@ -26,16 +26,18 @@ async def webhook():
 
     data = request.get_json()
     video_url = data.get('videoUrl')
+    game_name = data.get('gameName')
+    clip_details = data.get('clipDetails', "") # Campo opzionale
 
-    if not video_url:
-        return jsonify({"status": "error", "message": "Missing 'videoUrl' in request body"}), 400
+    if not video_url or not game_name:
+        return jsonify({"status": "error", "message": "Missing 'videoUrl' or 'gameName' in request body"}), 400
 
     # 1. Genera un ID univoco per la clip
     clip_id = generate_clip_id()
     print(f"ID della clip generato: {clip_id} per l'url {video_url}")
 
-    # 2. Salva su Google Sheets
-    if not save_to_id_store(clip_id, video_url):
+    # 2. Salva su Google Sheets con i nuovi dati
+    if not save_to_id_store(clip_id, video_url, game_name, clip_details):
         print(f"Errore nel salvataggio su Google Sheets per il clip ID: {clip_id}")
         return jsonify({"status": "error", "message": "Failed to save data to Google Sheets"}), 500
 
@@ -73,24 +75,21 @@ async def telegram_callback():
     if callback_data.startswith("approve:"):
         clip_id = callback_data.split(":")[1]
 
-        # 1. Recupera l'URL del video
-        video_url = get_video_url_by_clip_id(clip_id)
-        if not video_url:
-            await send_confirmation_message(chat_id, f"⚠️ Errore: non ho trovato il video per la clip {clip_id}.")
+        # 1. Recupera i dati della clip (URL, nome del gioco, dettagli)
+        clip_data = get_video_url_by_clip_id(clip_id)
+        if not clip_data:
+            await send_confirmation_message(chat_id, f"⚠️ Errore: non ho trovato i dati per la clip {clip_id}.")
             return jsonify({"status": "error", "message": f"Clip ID {clip_id} not found"}), 404
 
-        # 2. Genera i contenuti con Gemini
-        # TODO: In futuro, queste informazioni potrebbero essere chieste all'utente via chat.
-        game = "Call of Duty"
-        clip_details = "1v3 clutch with a sniper"
-        ai_content = generate_content(game, clip_details)
+        # 2. Genera i contenuti con Gemini usando i dati dinamici
+        ai_content = generate_content(clip_data["game_name"], clip_data["clip_details"])
         if not ai_content:
             await send_confirmation_message(chat_id, "⚠️ Errore: non sono riuscito a generare i contenuti con l'AI.")
             return jsonify({"status": "error", "message": "Failed to generate content"}), 500
 
         # 3. Aggiungi al calendario dei contenuti
         success = add_to_content_calendar(
-            video_url,
+            clip_data["video_url"],
             ai_content["title"],
             ai_content["description"],
             ai_content["hashtags"]

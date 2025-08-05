@@ -18,6 +18,9 @@ dependencies:
   # For local data persistence
   shared_preferences: ^2.2.3
 
+  # For state management
+  provider: ^6.1.2
+
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

@@ -86,7 +86,19 @@ pip install -r social_streamliner/requirements.txt
     -   Usa **BotFather** su Telegram per creare un nuovo bot e ottenere il **Token del Bot**.
     -   Trova il tuo **Chat ID** personale (puoi usare un bot come `@userinfobot`).
 
-### 4. Variabili d'Ambiente
+4.  **X (Twitter)**:
+    -   Vai su [X Developer Portal](https://developer.twitter.com/) e crea un nuovo progetto e un'app.
+    -   Assicurati che l'app abbia i permessi di `Read and Write`.
+    -   Genera le seguenti 4 credenziali: `API Key`, `API Key Secret`, `Access Token`, and `Access Token Secret`.
+
+5.  **Instagram**:
+    -   Vai su [Meta for Developers](https://developers.facebook.com/) e crea una nuova app di tipo "Business".
+    -   Configura il prodotto "Instagram Graph API" per la tua app.
+    -   Nella sezione "Graph API Explorer", genera un **Access Token** con i seguenti permessi: `instagram_basic`, `instagram_content_publish`, e `pages_show_list`.
+    -   Assicurati di convertire questo token in un **token di lunga durata**.
+    -   Avrai bisogno del tuo **Instagram Business Account ID**, che puoi trovare nelle impostazioni della tua pagina Facebook collegata.
+
+### 6. Variabili d'Ambiente
 
 -   Crea un file `.env` nella cartella `social_streamliner` (puoi copiare da `.env.example`).
 -   Compila il file `.env` con tutte le credenziali e i nomi raccolti nei passaggi precedenti.

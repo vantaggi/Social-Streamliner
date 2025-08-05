@@ -16,7 +16,7 @@ Social Streamliner è un'applicazione di automazione completa progettata per str
 L'applicazione è composta da due processi principali indipendenti:
 
 1.  **Web Server (`main.py`)**: Un server Flask che gestisce la parte interattiva del flusso.
-    -   Espone un endpoint `/webhook` per ricevere nuovi URL video.
+    -   Espone un endpoint `/webhook` per ricevere i dati delle clip (URL, nome del gioco, dettagli).
     -   Espone un endpoint `/telegram_callback` per gestire le risposte ai pulsanti di approvazione/rifiuto.
     -   Comunica con Telegram, Google Sheets e Google Gemini.
 
@@ -75,7 +75,9 @@ pip install -r social_streamliner/requirements.txt
     -   Abilita l'API di **Google Sheets**.
     -   Crea un **Account di Servizio**, scarica il file delle credenziali JSON e rinominalo in `credentials.json`. Posizionalo nella cartella `social_streamliner`.
     -   Crea un nuovo Google Sheet. Condividilo con l'indirizzo email dell'account di servizio (es. `nome-servizio@...iam.gserviceaccount.com`).
-    -   All'interno del foglio, crea due tabelle (fogli di lavoro) chiamate `ID_Store` e `Content_Calendar` e imposta le rispettive intestazioni come descritto nello schema del database.
+    -   All'interno del foglio, crea due tabelle (fogli di lavoro) chiamate `ID_Store` e `Content_Calendar`.
+    -   **Imposta le intestazioni per `ID_Store`**: `execution_id`, `video_url`, `created_at`, `game_name`, `clip_details`.
+    -   **Imposta le intestazioni per `Content_Calendar`**: `post_id`, `video_url`, `title`, `description`, `hashtags`, `status`, `created_at`, `publication_date`.
 
 2.  **Google Gemini AI**:
     -   Vai su [Google AI Studio](https://aistudio.google.com/) e genera una **API Key**.
@@ -115,7 +117,6 @@ Lo scheduler si avvierà e attiverà i job di pubblicazione agli orari configura
 
 ## Possibili Miglioramenti Futuri
 
-- **Input Contestuale per l'AI**: Chiedere all'utente via Telegram dettagli sulla clip per generare testi più accurati.
 - **Sistema di Retry**: In caso di fallimento di una pubblicazione, implementare un sistema che riprova a pubblicare.
 - **Dashboard Web**: Aggiungere una semplice interfaccia web per visualizzare lo stato del calendario dei contenuti.
 - **Database Robusto**: Migrare da Google Sheets a un database come PostgreSQL per gestire un volume maggiore di dati.

@@ -29,15 +29,16 @@ def get_spreadsheet():
         print(f"Errore imprevisto durante l'accesso a Google Sheets: {e}")
         return None
 
-def save_to_id_store(execution_id, video_url):
-    """Salva i dati nella tabella ID_Store."""
+def save_to_id_store(execution_id, video_url, game_name, clip_details):
+    """Salva i dati nella tabella ID_Store, includendo il contesto del gioco."""
     spreadsheet = get_spreadsheet()
     if not spreadsheet:
         return False
     try:
         worksheet = spreadsheet.worksheet("ID_Store")
         created_at = datetime.now().isoformat()
-        worksheet.append_row([execution_id, video_url, created_at])
+        # La riga ora include anche game_name e clip_details
+        worksheet.append_row([execution_id, video_url, created_at, game_name, clip_details])
         print(f"Dati salvati su ID_Store: {execution_id}")
         return True
     except gspread.exceptions.WorksheetNotFound:
@@ -48,19 +49,28 @@ def save_to_id_store(execution_id, video_url):
         return False
 
 def get_video_url_by_clip_id(clip_id):
-    """Cerca un clip_id in ID_Store e restituisce il video_url."""
+    """Cerca un clip_id in ID_Store e restituisce un dizionario con i dettagli della clip."""
     spreadsheet = get_spreadsheet()
     if not spreadsheet:
         return None
     try:
         worksheet = spreadsheet.worksheet("ID_Store")
+        # Trova la cella con il clip_id (assumendo sia nella colonna 1)
         cell = worksheet.find(clip_id)
+
         if cell:
-            video_url = worksheet.cell(cell.row, cell.col + 1).value
-            print(f"Trovato URL per clip_id {clip_id}: {video_url}")
-            return video_url
+            # Recupera l'intera riga per ottenere tutti i dati
+            row_values = worksheet.row_values(cell.row)
+            # Le colonne dovrebbero essere: 0:ID, 1:URL, 2:Data, 3:Gioco, 4:Dettagli
+            clip_data = {
+                "video_url": row_values[1],
+                "game_name": row_values[3],
+                "clip_details": row_values[4]
+            }
+            print(f"Trovati dati per clip_id {clip_id}: {clip_data}")
+            return clip_data
         else:
-            print(f"Nessun URL trovato per il clip_id: {clip_id}")
+            print(f"Nessun dato trovato per il clip_id: {clip_id}")
             return None
     except Exception as e:
         print(f"Errore durante la ricerca su ID_Store: {e}")

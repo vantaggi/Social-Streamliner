@@ -15,6 +15,9 @@ dependencies:
   # For making HTTP requests
   http: ^1.2.1
 
+  # For local data persistence
+  shared_preferences: ^2.2.3
+
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

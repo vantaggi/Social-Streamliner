@@ -8,3 +8,5 @@ google-generativeai
 requests
 schedule
 google-api-python-client
+tweepy
+facebook-business

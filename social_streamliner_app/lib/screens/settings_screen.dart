@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:social_streamliner_app/providers/app_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -9,28 +10,27 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final _backendUrlController = TextEditingController();
-  static const String _backendUrlKey = 'backend_url';
+  late TextEditingController _backendUrlController;
 
   @override
   void initState() {
     super.initState();
-    _loadBackendUrl();
-  }
-
-  Future<void> _loadBackendUrl() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _backendUrlController.text = prefs.getString(_backendUrlKey) ?? '';
+    _backendUrlController = TextEditingController();
+    // Carica l'URL iniziale dal provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<AppProvider>(context, listen: false);
+      _backendUrlController.text = provider.backendUrl;
     });
   }
 
   Future<void> _saveBackendUrl() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_backendUrlKey, _backendUrlController.text);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('URL del backend salvato!')),
-    );
+    final provider = Provider.of<AppProvider>(context, listen: false);
+    await provider.saveBackendUrl(_backendUrlController.text);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('URL del backend salvato!')),
+      );
+    }
   }
 
   @override

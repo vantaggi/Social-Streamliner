@@ -1,23 +1,19 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String _backendUrlKey = 'backend_url';
-
-  Future<String?> _getBackendUrl() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_backendUrlKey);
-  }
-
-  Future<bool> sendClipData(String videoUrl, String gameName, String clipDetails) async {
-    final baseUrl = await _getBackendUrl();
-    if (baseUrl == null || baseUrl.isEmpty) {
+  Future<bool> sendClipData({
+    required String backendUrl,
+    required String videoUrl,
+    required String gameName,
+    required String clipDetails,
+  }) async {
+    if (backendUrl.isEmpty) {
       print('URL del backend non configurato!');
       return false;
     }
 
-    final fullUrl = '$baseUrl/webhook';
+    final fullUrl = '$backendUrl/webhook';
 
     try {
       final response = await http.post(
